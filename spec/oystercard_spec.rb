@@ -22,16 +22,17 @@ describe OysterCard do
     end
   end
 
-  context '#deduct' do
-    it 'responds to deduct method' do
-      expect(subject).to respond_to(:deduct).with(1).argument
-    end
+  # DEDUCT IS NOW PRIVATE
+  # context '#deduct' do
+  #   it 'responds to deduct method' do
+  #     expect(subject).to respond_to(:deduct).with(1).argument
+  #   end
 
-    it 'deducts balance by requested amount' do
-      subject.top_up(10)
-      expect{subject.deduct(2)}.to change{subject.balance}.by -2
-    end
-  end
+  #   it 'deducts balance by requested amount' do
+  #     subject.top_up(10)
+  #     expect{subject.deduct(2)}.to change{subject.balance}.by -2
+  #   end
+  # end
 
   context '#in_journey?' do
     it 'initializes with false' do
@@ -41,17 +42,30 @@ describe OysterCard do
 
   context '#touch_in' do
     it 'changes in_journey to false' do
+    	subject.top_up(OysterCard::MINIMUM_BALANCE)
       subject.touch_in
       expect(subject).to be_in_journey
     end
+    it 'raises error if not enough balance' do
+    	expect{subject.touch_in}.to raise_error "Not enough balance"
+    end
+
   end
 
   context '#touch_out' do
     it 'changes in_journey to true' do
+    	subject.top_up(OysterCard::MINIMUM_CHARGE)
       subject.touch_in
       subject.touch_out
       expect(subject).not_to be_in_journey
     end
+
+    it 'deducts the minimum fare from the balance' do
+    	minimum_charge = OysterCard::MINIMUM_CHARGE
+    	subject.top_up(minimum_charge)
+    	expect{subject.touch_out}.to change{subject.balance}.by -minimum_charge
+    end
+
   end
 
 end
