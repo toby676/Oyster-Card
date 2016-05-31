@@ -14,7 +14,7 @@ class Oystercard
   end
 
   def touch_in(station)
-    fail 'Not enough balance!' if balance < DEFAULT_MIN
+    fail 'Not enough balance!' if balance < MIN_BALANCE
     @entry_station = station
   end
 
@@ -30,7 +30,7 @@ class Oystercard
   private
 
   DEFAULT_LIMIT = 90
-  DEFAULT_MIN = 1
+  MIN_BALANCE = 1
   MIN_CHARGE = 1
 
   def deduct(value)
@@ -48,7 +48,7 @@ class Oystercard
   end
 
   def empty?(value)
-    (@balance - value) < DEFAULT_MIN
+    (@balance - value) < MIN_BALANCE
   end
 
   def limit?(value)

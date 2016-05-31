@@ -45,7 +45,7 @@ describe Oystercard do
 
   context '#touch_in' do
     it "changes #in_journey? to true" do
-      card.top_up(Oystercard::DEFAULT_MIN)
+      card.top_up(Oystercard::MIN_BALANCE)
       card.touch_in(station)
       expect(card).to be_in_journey
     end
@@ -55,7 +55,7 @@ describe Oystercard do
     end
 
     it 'records an entry station' do
-      card.top_up(Oystercard::DEFAULT_MIN)
+      card.top_up(Oystercard::MIN_BALANCE)
       card.touch_in(station)
       expect(card.entry_station).to eq station
     end
@@ -64,7 +64,7 @@ describe Oystercard do
 
   context '#touch_out' do
     it "change #in_journey? to false" do
-      card.top_up(Oystercard::DEFAULT_MIN)
+      card.top_up(Oystercard::MIN_BALANCE)
       card.touch_in(station)
       card.touch_out
       expect(card).not_to be_in_journey
@@ -75,7 +75,7 @@ describe Oystercard do
     end
 
     it 'changes the entry_station instance variable to nil' do
-      card.top_up(Oystercard::DEFAULT_MIN)
+      card.top_up(Oystercard::MIN_BALANCE)
       card.touch_in(station)
       card.touch_out
       expect(card.entry_station).to be_nil
