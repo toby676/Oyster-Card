@@ -3,9 +3,7 @@ require 'oystercard'
 describe Oystercard do
   subject(:card) { described_class.new }
   context 'responses' do
-    it { is_expected.to respond_to :balance }
     it { is_expected.to respond_to(:top_up).with(1).argument }
-    it { is_expected.to respond_to(:deduct).with(1).argument }
   end
 
   context '#top_up' do
@@ -36,32 +34,6 @@ describe Oystercard do
     end
   end
 
-  context '#deduct' do
-    before(:each) do
-      card.top_up(10)
-    end
-
-    it 'deducts from the card' do
-      expect{card.deduct(0)}.not_to raise_error
-    end
-
-    it 'deducts 10 from the card' do
-      expect(card.deduct(10)).to eq 0
-    end
-
-    it 'deducts 5 from the card' do
-      expect(card.deduct(5)).to eq 5
-    end
-
-    it 'raises an error if not an integer' do
-      expect{card.deduct("foo")}.to raise_error("Please input an integer")
-    end
-
-    it 'raises an error if balance would go below zero' do
-      expect{card.deduct(11)}.to raise_error("Insufficient funds")
-    end
-  end
-
   context '#in_journey?' do
     it "returns false if not in journey" do
       expect(card.in_journey?).to eq false
@@ -79,8 +51,6 @@ describe Oystercard do
       expect{card.touch_in}.to raise_error 'Not enough balance!'
     end
 
-    # it "card must have minimum balance of #{Oystercard::DEFAULT_MIN}" do
-    # end
   end
 
   context '#touch_out' do
@@ -90,13 +60,11 @@ describe Oystercard do
       card.touch_out
       expect(card).not_to be_in_journey
     end
-  end
 
-  context ':balance' do
-    it "has a balance of 0" do
-      card = Oystercard.new
-      expect(card.balance).to eq 0
+    it 'deducts balance by minimum charge' do
+      expect {card.touch_out}.to change{card.balance}.by(-Oystercard::MIN_CHARGE)
     end
   end
+
 
 end

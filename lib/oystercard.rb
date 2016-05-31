@@ -1,6 +1,7 @@
 
 class Oystercard
-  attr_reader :balance
+
+  attr_reader :balance, :in_journey  
 
   def initialize
     @balance = 0
@@ -12,38 +13,34 @@ class Oystercard
     @balance += value
   end
 
-  def deduct(value)
-    fail "Please input an integer" unless is_number?(value)
-    fail "Insufficient funds" if (@balance - value) < 0
-    @balance -= value
-  end
-
   def touch_in
-    fail 'Not enough balance!' if @balance < DEFAULT_MIN
+    fail 'Not enough balance!' if balance < DEFAULT_MIN
     @in_journey = true
   end
 
   def touch_out
     @in_journey = false
+    deduct(MIN_CHARGE)
   end
 
   def in_journey?
-    @in_journey
+    in_journey
   end
 
   private
 
   DEFAULT_LIMIT = 90
   DEFAULT_MIN = 1
+  MIN_CHARGE = 1
+
+  def deduct(value)
+    fail "Please input an integer" unless is_number?(value)
+    @balance -= value
+  end
 
   def top_up_fail(value)
     integer_error(value)
     fail 'Exceeded limit' if limit?(value)
-  end
-
-  def deduct_fail(value)
-    integer_error(value)
-    fail "Insufficient funds" if empty?(value)
   end
 
   def integer_error(value)
