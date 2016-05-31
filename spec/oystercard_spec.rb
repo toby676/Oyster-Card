@@ -1,7 +1,7 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:card) { described_class.new }
+  subject(:card) { described_class.new }
   context 'responses' do
     it { is_expected.to respond_to :balance }
     it { is_expected.to respond_to(:top_up).with(1).argument }
@@ -70,13 +70,22 @@ describe Oystercard do
 
   context '#touch_in' do
     it "changes #in_journey? to true" do
+      card.top_up(Oystercard::DEFAULT_MIN)
       card.touch_in
       expect(card).to be_in_journey
     end
+
+    it 'raises error if not enough balance' do
+      expect{card.touch_in}.to raise_error 'Not enough balance!'
+    end
+
+    # it "card must have minimum balance of #{Oystercard::DEFAULT_MIN}" do
+    # end
   end
 
   context '#touch_out' do
     it "change #in_journey? to false" do
+      card.top_up(Oystercard::DEFAULT_MIN)
       card.touch_in
       card.touch_out
       expect(card).not_to be_in_journey
