@@ -1,7 +1,7 @@
 require 'oystercard'
 
 describe Oystercard do
-  let(:card) { described_class.new } 
+  let(:card) { described_class.new }
   context 'responses' do
     it { is_expected.to respond_to :balance }
     it { is_expected.to respond_to(:top_up).with(1).argument }
@@ -40,11 +40,11 @@ describe Oystercard do
     before(:each) do
       card.top_up(10)
     end
-    
+
     it 'deducts from the card' do
       expect{card.deduct(0)}.not_to raise_error
     end
-    
+
     it 'deducts 10 from the card' do
       expect(card.deduct(10)).to eq 0
     end
@@ -56,9 +56,30 @@ describe Oystercard do
     it 'raises an error if not an integer' do
       expect{card.deduct("foo")}.to raise_error("Please input an integer")
     end
-    
+
     it 'raises an error if balance would go below zero' do
       expect{card.deduct(11)}.to raise_error("Insufficient funds")
+    end
+  end
+
+  context '#in_journey?' do
+    it "returns false if not in journey" do
+      expect(card.in_journey?).to eq false
+    end
+  end
+
+  context '#touch_in' do
+    it "changes #in_journey? to true" do
+      card.touch_in
+      expect(card).to be_in_journey
+    end
+  end
+
+  context '#touch_out' do
+    it "change #in_journey? to false" do
+      card.touch_in
+      card.touch_out
+      expect(card).not_to be_in_journey
     end
   end
 

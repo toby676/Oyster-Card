@@ -4,17 +4,30 @@ class Oystercard
 
   def initialize
     @balance = 0
+    @in_journey = false
   end
-  
+
   def top_up(value)
     top_up_fail(value)
     @balance += value
   end
-  
+
   def deduct(value)
     fail "Please input an integer" unless is_number?(value)
     fail "Insufficient funds" if (@balance - value) < 0
     @balance -= value
+  end
+
+  def touch_in
+    @in_journey = true
+  end
+
+  def touch_out
+    @in_journey = false
+  end
+
+  def in_journey?
+    @in_journey
   end
 
   private
@@ -26,7 +39,7 @@ class Oystercard
     fail 'Please input an integer' unless is_number?(value)
     fail 'Exceeded limit' if limit?(value)
   end
-  
+
   def deduct_fail(value)
     fail "Please input an integer" unless is_number?(value)
     fail "Insufficient funds" if empty?(value)
