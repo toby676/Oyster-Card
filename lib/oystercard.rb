@@ -1,11 +1,12 @@
 
 class Oystercard
 
-  attr_reader :balance, :entry_station
+  attr_reader :balance, :entry_station, :journey_history
 
   def initialize
     @balance = 0
     @entry_station = nil
+    @journey_history = []
   end
 
   def top_up(value)
@@ -13,13 +14,14 @@ class Oystercard
     @balance += value
   end
 
-  def touch_in(station)
+  def touch_in(entry_station)
     fail 'Not enough balance!' if balance < MIN_BALANCE
-    @entry_station = station
+    @entry_station = entry_station
   end
 
-  def touch_out
+  def touch_out(exit_station)
     deduct(MIN_CHARGE)
+    @journey_history << {entry_station: entry_station, exit_station: exit_station}
     @entry_station = nil
   end
 
@@ -45,10 +47,6 @@ class Oystercard
 
   def integer_error(value)
     fail "Please input an integer" unless is_number?(value)
-  end
-
-  def empty?(value)
-    (@balance - value) < MIN_BALANCE
   end
 
   def limit?(value)
