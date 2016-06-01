@@ -28,21 +28,11 @@ let (:station) {Station.new}
 
   end
 
-  # describe '#deduct' do
-
-  #   	it { is_expected.to respond_to(:deduct).with(1).argument }
-
-  #   	it 'deducts a fare to pay for journey' do
-  #   	expect{subject.deduct 1 }.to change{subject.balance}.by -1
-  #   	end
-  # end
-
   describe '#in_journey?' do
-      it {is_expected.to respond_to(:in_journey?)}
 
-      it 'initializes journey with false' do
-        expect(card.in_journey?).to be(false)
-      end
+      # it 'initializes journey with false' do
+      #   expect(card.in_journey?).to be(false)
+      # end
 
       it 'responds to touch_in with true' do
         card.top_up Oystercard::MINIMUM_BALANCE
@@ -64,7 +54,10 @@ let (:station) {Station.new}
     it 'refuses a card with a balance less than minimum balance' do
       expect{card.touch_in(station)}.to raise_error ("Insufficient funds!")
     end
-
+    it 'remembers the entry station' do
+      card.top_up(Oystercard::MINIMUM_BALANCE)
+      expect(card.touch_in(station)).to eq station
+    end
 
   end
 
@@ -72,6 +65,13 @@ let (:station) {Station.new}
     it 'charges your card' do
       expect{card.touch_out}.to change{card.balance}.by (-Oystercard::FARE)
     end
+    it 'resets the entry station to nil' do
+      card.top_up Oystercard::MINIMUM_BALANCE
+      card.touch_in(station)
+      expect{card.touch_out}.to change{card.entry_station}.to nil
+
+    end
+
   end
 
 
