@@ -14,7 +14,7 @@ describe Oystercard do
   end
 
   context '#top_up' do
-    
+
     it 'raises an error when a string is input' do
       expect{card.top_up("foo")}.to raise_error("Please input an integer")
     end
@@ -71,6 +71,13 @@ describe Oystercard do
       card.touch_in(entry_station)
       card.touch_out(exit_station)
       expect(card.entry_station).to be_nil
+    end
+
+    it 'stores exit station' do
+      card.top_up(minimum_balance)
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.exit_station).to eq exit_station
     end
   end
 
