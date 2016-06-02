@@ -41,7 +41,7 @@ let (:station) {Station.new}
       end
 
       it 'responds to touch_out with false' do
-      card.touch_out
+      card.touch_out(station)
       expect(card.in_journey?).to be false
       end
 
@@ -62,17 +62,37 @@ let (:station) {Station.new}
   end
 
   describe '#touch_out' do
-    it 'charges your card' do
-      expect{card.touch_out}.to change{card.balance}.by (-Oystercard::FARE)
-    end
-    it 'resets the entry station to nil' do
-      card.top_up Oystercard::MINIMUM_BALANCE
-      card.touch_in(station)
-      expect{card.touch_out}.to change{card.entry_station}.to nil
 
+    it {should respond_to(:touch_out).with(1).argument}
+
+    it 'charges your card' do
+      expect{card.touch_out(station)}.to change{card.balance}.by (-Oystercard::FARE)
     end
+    
+    # it 'resets the entry station to nil' do
+    #   card.top_up Oystercard::MINIMUM_BALANCE
+    #   card.touch_in(station)
+    #   expect{card.touch_out(station)}.to change{card.entry_station}.to nil
+    #   end
+
+      it 'remembers exit stations' do
+      card.touch_out(station)
+      expect(card.touch_out(station)).to eq station
+      end
 
   end
+
+  describe '#journey_log' do
+
+    it 'records the journey log' do
+    card.top_up Oystercard::MINIMUM_BALANCE
+    card.touch_in(station)
+    card.touch_out(station)
+    expect(card.journey_log).to eq ([{station => station}])
+
+  end 
+
+  end 
 
 
 end
