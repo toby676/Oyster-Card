@@ -37,33 +37,19 @@ describe OysterCard do
   #   end
   # end
 
-  context '#in_journey?' do
-    it 'initializes with false' do
-      expect(subject).not_to be_in_journey
-    end
-  end
+
 
   context '#touch_in' do
-    it 'changes in_journey to false' do
-    	subject.top_up(OysterCard::MINIMUM_BALANCE)
-      subject.touch_in(entry_station)
-      expect(subject).to be_in_journey
-    end
+  
     it 'raises error if not enough balance' do
     	expect{subject.touch_in(entry_station)}.to raise_error "Not enough balance"
     end
 
-  end
+end
 
-  context '#touch_out' do
-    it 'changes in_journey to true' do
-    	subject.top_up(OysterCard::MINIMUM_CHARGE)
-      subject.touch_in(entry_station)
-      subject.touch_out(exit_station)
-      expect(subject).not_to be_in_journey
-    end
+context 'touch out' do
 
-    it 'deducts the minimum fare from the balance' do
+    xit 'deducts the minimum fare from the balance' do
     	minimum_charge = OysterCard::MINIMUM_CHARGE
     	subject.top_up(minimum_charge)
     	expect{subject.touch_out(exit_station)}.to change{subject.balance}.by -minimum_charge
@@ -75,26 +61,7 @@ describe OysterCard do
 
   end
 
-  context 'entry station' do
-
-      it 'is nil when initialized' do
-        expect(subject.entry_station).to eq nil
-      end
-
-      it 'stores the entry station' do
-        subject.top_up(10)
-        subject.touch_in(entry_station)
-        expect(subject.entry_station).to eq entry_station
-      end
-
-      it 'forgets entry station when you touch out' do
-        subject.top_up(10)
-        subject.touch_in(entry_station)
-        subject.touch_out(exit_station)
-        expect(subject.entry_station).to eq nil
-      end
-
-    end
+  
 
   context 'journey_log' do
 
@@ -102,11 +69,29 @@ describe OysterCard do
       expect(subject.journey_log).to respond_to :each
     end
 
-    it 'creates a journey' do
+    xit 'creates a journey' do
       subject.top_up(10)
       subject.touch_in(entry_station)
       subject.touch_out(exit_station)
       expect(subject.journey_log).to eq [{entry_station: entry_station, exit_station: exit_station}]
+    end
+
+  end
+
+  context 'more tests' do
+
+    before do
+      subject.top_up(90)
+    end
+
+    it 'createss a new journey when touch in' do
+    subject.touch_in(entry_station)
+    expect(subject.journey).to respond_to :fare
+    end
+
+    it 'charges min fare if touch out with an entry station' do
+      subject.touch_in(entry_station)
+      expect{subject.touch_out(exit_station)}.to change{subject.balance}.by -Journey::MINIMUM_FARE
     end
 
   end
